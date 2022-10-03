@@ -1,0 +1,33 @@
+#!/bin/bash
+
+ans=""
+RED="\e[41m"
+GREEN="\e[42m"
+YELLOW="\e[33m"
+RESET="\e[0m"
+
+run_command() {
+	nohup $ans &>/dev/null &
+	printf "${RESET}Successfully started a detatched ${GREEN}$ans${RESET} instance!\n"
+	exit 0
+}
+
+check_exists() {
+	type $ans >/dev/null 2>&1 || { printf >&2 "${RED}[ERROR]${RESET} Command doesn't exist! Aborting!\n"; exit 1; }
+	run_command
+}
+
+get_input() {
+	printf "\e[45m[INPUT COMMAND]\e[0m: ${YELLOW}"
+	read ans
+	check_exists
+}
+
+
+if [[ -z $1 ]]; then
+	printf "${RED}[ERROR]${RESET} You didn't give me a command/program to run!\n"
+	get_input
+else
+	ans=$1
+	check_exists
+fi
