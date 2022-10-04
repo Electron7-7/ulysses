@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cat <<EOF
+Listing all commands...
+
+General Commands:
+	- newhup
+EOF
