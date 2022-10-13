@@ -1,0 +1,65 @@
+#!/bin/bash
+clr='\e[0m'
+errc='\e[1;31m'
+succc='\e[1;32m'
+boldc='\e[1;37m'
+inpc='\e[1;36m'
+procc='\e[1;33m'
+
+SPOOF=':'$(($RANDOM%100))':'$(($RANDOM%100))'/'
+
+
+spoof_me() {
+	ADDR=$( grep -oP '([a-fA-F\d]{2}(:|)){6}' <<< $( ip -o link show $NETFACE ) )
+	ADDR=${ADDR::18}
+	NEWADDR=$( sed -Ee 's/.{6}$/'$SPOOF -e '/^\n/d' <<< $ADDR )
+	echo -e "$procc[SETTING $NETFACE DOWN]"
+	sudo ip link set $NETFACE down
+	sudo ./.run_with_dots 0.5 sleep 1.5 >> .log 2>&1
+	clear
+	echo -e "\n[CHANGING $NETFACE ADDRESS]"
+	sudo ip link set $NETFACE address $NEWADDR
+	sudo ./.run_with_dots 0.5 sleep 2 >> .log 2>&1
+	clear
+	echo -e "\n[BRINGING $NETFACE BACK UP]"
+	sudo ip link set $NETFACE up
+	sudo ./.run_with_dots 0.5 sleep 3 >> .log 2>&1
+	echo ""
+	sleep 0.2
+	echo -e "$succc[SUCCESS] Your new mac address is$procc $NEWADDR$clr"
+	echo '---------------------------------------------------'
+	ip -c link show $NETFACE
+	rm .log
+	exit 0
+}
+
+get_face() {
+	clear
+	echo -e "$errc[ERROR]$clr No network interface specified"
+	while true; do
+		echo -en "$inpc[NETWORK INTERFACE]: $clr"
+		read -r answer
+		if [[ -z $answer ]]; then
+			echo -e "$errc[ERROR]$clr\nPlease type the network interface you want to mac spoof!"
+		else
+			checkout="$(ip link show $answer &> /dev/null)"
+			if [[ $? -eq 0 ]]; then
+				echo -e "$succc[SUCCESS] Selecting$boldc $answer$clr"
+				NETFACE=$answer
+				sleep 0.1
+				spoof_me
+			else
+				echo -e "$errc[ERROR] Interface does not exist!\n$clr""Please try again"
+				sleep 0.1
+			fi
+		fi
+	done
+}
+
+if [[ -z $1 ]]; then
+	get_face
+else
+	NETFACE=$1
+	clear
+	spoof_me
+fi

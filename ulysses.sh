@@ -1,8 +1,7 @@
 #!/bin/bash
-export DIR=$(pwd)
-export BIN="$DIR/bin/"
-export MCS="$BIN/menu_commands/"
-export keepup=true
+export dir=$(pwd)
+export bin="$dir/bin/"
+source $dir/.menu_cmds
 
 clr="\e[0m"
 bold="$clr\e[1m"
@@ -11,21 +10,24 @@ logoColor="\e[38;5;161m"
 you="\e[93m"
 bod="\e[38;5;69m"
 
+keepup=true
 current="ulysses"
 user=$(id -u -n)
+
 p1="$bod┌──($bold$you$user$clr$bod)"
 p2="$bod╰──────[$bold$current$clr$bod]──╡$bold\$$clr: "
 
-_action() {
-	if [[ -e "$MCS/$getin" ]]; then
-		. $MCS/$getin
-	fi
-}
-
 _prompt() {
-	echo -e -n "$p1\n$p2"
-	read -r getin
-	_action
+	echo -ne "$p1\n$p2"
+	read -r user_in
+	if [[ ${user_in} == "reload" ]]; then
+		source $dir/.menu_cmds
+		_logo
+	elif [[ ${user_in} == "quit" || ${user_in} == "exit" ]]; then
+		clear & exit 0
+	elif [[ ${commands[*]} =~ ${user_in} ]]; then
+		$user_in
+	fi
 }
 
 _logo() {
@@ -35,13 +37,9 @@ _logo() {
 	echo -e "$logoColor$LOGO$clr\n\n"
 }
 
-_main() {
-	# call the logo function
-	_logo
-	# simple loop to keep prompt up
-	while $keepup; do
-		_prompt
-	done
-}
 
-_main
+_logo
+
+while $keepup; do
+	_prompt # simple loop to keep prompt up
+done

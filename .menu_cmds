@@ -1,0 +1,23 @@
+#!/bin/bash
+export commands=('list, show, info, help, quit, exit')
+
+_lines() {
+	for (( x=0 ; x<$1 ; x++ )); do
+		printf '-'
+	done
+	printf "\n"
+}
+
+list() {
+	ls -1 --color=always $bin
+}
+
+show() {
+	if [[ -n $1 ]]; then
+		$bin/$1 --info
+	else
+		printf "To get detailed info on a specific command use: \e[2;38;5;245m""show\e[3m command_name\e[0m\n"
+		_lines 65
+		list
+	fi
+}

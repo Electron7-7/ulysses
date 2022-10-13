@@ -1,0 +1,12 @@
+#!/bin/bash
+
+SPEED=$1; shift
+
+"$@" &
+
+while kill -0 $!; do
+	printf '.' > /dev/tty
+	sleep $SPEED
+done
+
+printf '\n' > /dev/tty
