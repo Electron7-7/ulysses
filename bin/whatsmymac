@@ -1,0 +1,38 @@
+#!/bin/bash
+_getaddr() {
+        ADDR=$( grep -oP '([a-fA-F\d]{2}(:|)){6}' <<< $( ip -o link show $NETFACE ) )
+        ADDR=${ADDR::18}
+
+        echo $ADDR
+        exit 0
+}
+
+_getdev() {
+        while true; do
+                echo -n "[NETWORK DEVICE]: "
+                read answer
+                checkout="$(ip link show $answer &> /dev/null)"
+                if [[ $? -eq 0 ]]; then
+                        echo "[SUCCESS]"
+                        NETFACE=$answer
+                        _getaddr
+                else
+                        echo -e "[ERROR] Interface does not exist!\nPlease try again"
+                        sleep 0.1
+                fi
+        done
+}
+
+if [[ -z $1 ]]; then
+        echo "No network device specified! Please enter network device"
+        _getdev
+else
+        checkout="$(ip link show $1 &> /dev/null)"
+        if [[ $? -eq 0 ]]; then
+                NETFACE=$1
+                _getaddr
+        else
+                echo "Network device doesn't exist! Please enter existing network device"
+                _getdev
+        fi
+fi
