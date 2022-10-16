@@ -12,3 +12,4 @@ Have fun!
 
 ## General 
 - **newhup:** a script designed to make using `nohup` cleaner, simpler, and prettier
+- **spoofme** a quick and simple way to randomize the last four characters of any network interface's MAC address
