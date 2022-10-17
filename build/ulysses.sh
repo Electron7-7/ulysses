@@ -27,7 +27,7 @@ _prompt() {
 	for z in $bin/*/; do
 		if [[ $(ls $z) =~ $user_in ]]; then
 			success=true
-			$z/$user_in
+			$z/$user_in --start
 		fi
 	done
 

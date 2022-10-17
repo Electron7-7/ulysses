@@ -42,13 +42,16 @@ _run() {
 	fi
 }
 
-options=$(getopt -l "help" -o "h" -a -- "$@")
+options=$(getopt -l "help,start" -o "hs" -a -- "$@")
 eval set -- "$options"
 
 while true; do
 	case $1 in
 		-h|--help)
 			help
+			break;;
+		-s|--start)
+			_run
 			break;;
 		--)
 			_run;;
