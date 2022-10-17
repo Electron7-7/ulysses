@@ -24,42 +24,45 @@ _prompt() {
 	echo -ne "$p1\n$p2"
 	read -r user_in
 
-	for z in $bin/*/; do
-		if [[ $(ls $z) =~ $user_in ]]; then
-			success=true
-			$z/$user_in --start
-		fi
-	done
+	case $user_in in
+		"reload" )
+			source $dir/.menu_cmds
+			_logo
+			break;;
 
-	if [[ ! $success ]]; then
-		case $user_in in
-			"reload" )
-				source $dir/.menu_cmds
-				_logo;;
+		"quit"|"exit" )
+			clear
+			exit 0;;
 
-			"quit"|"exit" )
-				clear
-				exit 0;;
+		"help")
+			help;;
 
-			"help")
-				help;;
+		"help"*)
+			length=${#user_in}
+			dum=${user_in:5:length}
+			help $dum;;
 
-			"help"*)
-				length=${#user_in}
-				dum=${user_in:5:length}
-				help $dum;;
+		"clear"|"cls"|"clr"|"^L")
+			clear
+			echo -e "$logoColor$LOGO$clr\n";;
 
-			"clear"|"cls"|"clr"|"^L")
-				clear
-				echo -e "$logoColor$LOGO$clr\n";;
+		"list"|"show")
+			list;;
 
-			"list"|"show")
-				list;;
+		*)
+			for z in $bin/*/; do
+				if [[ $(ls $z) =~ $user_in ]]; then
+					success=true
+					$z/$user_in
+					break
+				fi
+			done
 
-			*)
-				echo -e "$red[COMMAND NOT FOUND]: ${user_in}$clr\n";;
-		esac
-	fi
+			if [[ ! $success ]]; then
+				echo -e "$red[COMMAND NOT FOUND]: ${user_in}$clr\n"
+			fi
+			;;
+	esac
 }
 
 _logo() {

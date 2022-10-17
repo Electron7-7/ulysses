@@ -42,18 +42,17 @@ _run() {
 	fi
 }
 
-options=$(getopt -l "help,start" -o "hs" -a -- "$@")
+running=true
+
+options=$(getopt -l "help" -o "h" -a -- "$@")
 eval set -- "$options"
 
-while true; do
+while $running; do
 	case $1 in
 		-h|--help)
 			help
-			break;;
-		-s|--start)
-			_run
-			break;;
+			exit 0;;
 		--)
-			_run;;
+			break;;
 	esac
 done

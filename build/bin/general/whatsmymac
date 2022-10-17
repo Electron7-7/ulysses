@@ -4,62 +4,65 @@ cat <<EOF
 Usge: whatsmymac [-h] <network interface>
 Prints out the full current MAC address of the specified network interface
 
--h, -help, --help                               Display help
+-h, -help, --help               Display help
 
 EOF
 }
 
 _getaddr() {
-        ADDR=$( grep -oP '([a-fA-F\d]{2}(:|)){6}' <<< $( ip -o link show $NETFACE ) )
-        ADDR=${ADDR::18}
+    ADDR=$( grep -oP '([a-fA-F\d]{2}(:|)){6}' <<< $( ip -o link show $NETFACE ) )
+    ADDR=${ADDR::18}
 
-        echo $ADDR
+    echo $ADDR
+
+    exit 0
 }
 
 _getdev() {
-        while true; do
-                echo -n "[NETWORK DEVICE]: "
-                read answer
-                checkout="$(ip link show $answer &> /dev/null)"
-                if [[ $? -eq 0 ]]; then
-                        echo "[SUCCESS]"
-                        NETFACE=$answer
-                        _getaddr
-                else
-                        echo -e "[ERROR] Interface does not exist!\nPlease try again"
-                        sleep 0.1
-                fi
-        done
+    while true; do
+        echo -n "[NETWORK DEVICE]: "
+        read answer
+        checkout="$(ip link show $answer &> /dev/null)"
+        if [[ $? -eq 0 ]]; then
+            echo "[SUCCESS]"
+            NETFACE=$answer
+            _getaddr
+        else
+            echo -e "[ERROR] Interface does not exist!\nPlease try again"
+            sleep 0.1
+        fi
+    done
 }
 
 _run() {
-        if [[ -z $1 ]]; then
-                echo "No network device specified! Please enter network device"
-                _getdev
+    if [[ -z $1 ]]; then
+        echo "No network device specified! Please enter network device"
+        _getdev
         else
-                checkout="$(ip link show $1 &> /dev/null)"
-                if [[ $? -eq 0 ]]; then
-                        NETFACE=$1
-                        _getaddr
-                else
-                        echo "Network device doesn't exist! Please enter existing network device"
-                        _getdev
-                fi
+            checkout="$(ip link show $1 &> /dev/null)"
+            if [[ $? -eq 0 ]]; then
+                NETFACE=$1
+                _getaddr
+            else
+                echo "Network device doesn't exist! Please enter existing network device"
+                _getdev
         fi
+    fi
 }
 
-options=$(getopt -l "help,start" -o "hs" -a -- "$@")
+running=true
+
+options=$(getopt -l "help" -o "h" -a -- "$@")
 eval set -- "$options"
 
-while true; do
-        case $1 in
-                -h|--help)
-                        help
-                        break;;
-                -s|--start)
-                        _run
-                        break;;
-                --)
-                        _run;;
-        esac
+while $running; do
+    case $1 in
+        -h|--help)
+            help
+            exit 0;;
+        --)
+            break;;
+    esac
 done
+
+_run
