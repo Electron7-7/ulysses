@@ -18,6 +18,8 @@ RESET="\e[0m"
 run_command() {
 	nohup $ans &>/dev/null &
 	printf "${RESET}Successfully started a detatched ${GREEN}$ans${RESET} instance!\n"
+
+	break
 }
 
 check_exists() {

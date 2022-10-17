@@ -39,6 +39,8 @@ spoof_me() {
 	echo '---------------------------------------------------'
 	ip -c link show $NETFACE
 	rm .log
+
+	break
 }
 
 get_face() {
