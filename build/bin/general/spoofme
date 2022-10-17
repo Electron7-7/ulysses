@@ -8,6 +8,15 @@ procc='\e[1;33m'
 
 SPOOF=':'$(($RANDOM%100))':'$(($RANDOM%100))'/'
 
+help() {
+cat <<EOF
+Usage: spoofme [-h] <network interface>
+Spoof MAC address of specified network interface by randomizing the last four characters
+
+-h, -help, --help				Display help
+
+EOF
+}
 
 spoof_me() {
 	ADDR=$( grep -oP '([a-fA-F\d]{2}(:|)){6}' <<< $( ip -o link show $NETFACE ) )
@@ -56,10 +65,25 @@ get_face() {
 	done
 }
 
-if [[ -z $1 ]]; then
-	get_face
-else
-	NETFACE=$1
-	clear
-	spoof_me
-fi
+_run() {
+	if [[ -z $1 ]]; then
+		get_face
+	else
+		NETFACE=$1
+		clear
+		spoof_me
+	fi
+}
+
+options=$(getopt -l "help" -o "h" -a -- "$@")
+eval set -- "$options"
+
+while true; do
+	case $1 in
+		-h|--help)
+			help
+			break;;
+		--)
+			_run;;
+	esac
+done

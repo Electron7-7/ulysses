@@ -1,4 +1,13 @@
 #!/bin/bash
+help() {
+cat <<EOF
+Usage: newhup [-h] <command> [command flags and/or options]
+Basically just a cleaner and faster way of using nohup
+
+-h, -help, --help				Display help
+
+EOF
+}
 
 ans=""
 RED="\e[41m"
@@ -23,11 +32,25 @@ get_input() {
 	check_exists
 }
 
+_run() {
+	if [[ -z $1 ]]; then
+		printf "${RED}[ERROR]${RESET} You didn't give me a command/program to run!\n"
+		get_input
+	else
+		ans=$1
+		check_exists
+	fi
+}
 
-if [[ -z $1 ]]; then
-	printf "${RED}[ERROR]${RESET} You didn't give me a command/program to run!\n"
-	get_input
-else
-	ans=$1
-	check_exists
-fi
+options=$(getopt -l "help" -o "h" -a -- "$@")
+eval set -- "$options"
+
+while true; do
+	case $1 in
+		-h|--help)
+			help
+			break;;
+		--)
+			_run;;
+	esac
+done

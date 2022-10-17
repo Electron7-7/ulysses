@@ -1,6 +1,4 @@
 #!/bin/bash
-export -A commands=( [list]=1 [show]=1 [info]=1 )
-
 _lines() {
 	for (( i=0 ; i<$1 ; i++ )); do
 		printf '-'
@@ -8,50 +6,47 @@ _lines() {
 	printf "\n"
 }
 
-help() {
-cat <<EOF
-MENU COMMANDS
--------------
+_info() {
+	success=false
+	for y in $bin/*/; do
+		if [[ $(ls $y) =~ $1 ]]; then
+			$y/$1 --help
+			success=true
+		fi
+	done
 
-help - show this help
-
-clear/cls/clr - clear the screen
-
-list/show - list all commands in their respective groups
-
-info (not yet implemented) - get info/help on a specific command (or list commands if no command given)
-
-quit/exit - exit ulysses
-
-EOF
+	if [[ ! $success ]]; then
+		echo "Command not found!\n"
+	fi
 }
 
-show() {
+help() {
+	echo ''
+
+	if [[ -z $1 ]]; then
+cat <<EOF
+Usage: ulysses <command> [flags and/or options]
+
+help				Display help
+help <command>		Display help for given command
+
+clear, cls, clr		Clear the screen
+
+list, show			List all commands and their respective groups
+
+quit, exit			Exit ulysses
+
+EOF
+	else
+		_info $1
+	fi
+}
+
+list() {
 	for x in $bin/*/; do
 		dirp=$(echo $x | grep -Pow '\w*(?=\/$)')
 		echo -e '\e[1;33;4m'${dirp^^}'\e[00m'
 		ls -1 --color=never $x
 		echo ''
 	done
-}
-
-list() {
-	show
-}
-
-info() {
-	if [[ -z $1 ]]; then
-		printf "Usage:\e[2;38;5;245m info\e[3m command_name\e[0m"
-		echo -e '\n'
-		show
-	else
-		for y in $bin/*/; do
-			if [[ $(ls "$y") =~ $1 ]]; then
-				$y/$1 --info
-				break
-			fi
-		done
-
-		echo "Command doesn't exist!"
-	fi
 }

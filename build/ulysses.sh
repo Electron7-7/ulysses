@@ -10,7 +10,6 @@ dim="$clr\e[2m"
 logoColor="\e[38;5;161m"
 you="\e[93m"
 bod="\e[38;5;69m"
-
 red='\e[1;31m'
 
 current="ulysses"
@@ -23,31 +22,33 @@ _prompt() {
 	echo -ne "$p1\n$p2"
 	read -r user_in
 
-	if [[ -n "${commands[$user_in]}" ]]; then
-		$user_in
-	else
-		case $user_in in
-			"reload" )
-				source $dir/.menu_cmds
-				_logo;;
+	case $user_in in
+		"reload" )
+			source $dir/.menu_cmds
+			_logo;;
 
-			"quit"|"exit" )
-				clear
-				exit 0;;
+		"quit"|"exit" )
+			clear
+			exit 0;;
 
-			"help")
-				clear
-				echo -e "$logoColor$LOGO$clr\n"
-				help;;
+		"help")
+			help;;
 
-			"clear"|"cls"|"clr"|"^L")
-				clear
-				echo -e "$logoColor$LOGO$clr\n";;
+		"help"*)
+			length=${#user_in}
+			dum=${user_in:5:length}
+			help $dum;;
 
-			*)
-				echo -e "$red[COMMAND NOT FOUND]: ${user_in}$clr\n";;
-		esac
-	fi
+		"clear"|"cls"|"clr"|"^L")
+			clear
+			echo -e "$logoColor$LOGO$clr\n";;
+
+		"list"|"show")
+			list;;
+
+		*)
+			echo -e "$red[COMMAND NOT FOUND]: ${user_in}$clr\n";;
+	esac
 }
 
 _logo() {
