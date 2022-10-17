@@ -1,4 +1,5 @@
 #!/bin/bash
+dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 clr='\e[00m'
 orang='\e[38;5;202m'
 red='\e[1;91m'
@@ -7,10 +8,10 @@ gren='\e[1;92m'
 _install() {
 	echo -e "$gren[INSTALLING FILES]$clr"
 	mkdir /usr/local/bin/_ulysses
-	cp ./build/ulysses.sh /usr/local/bin/ulysses
-	cp ./build/.menu_cmds /usr/local/bin/_ulysses/
-	cp -r ./build/bin/ /usr/local/bin/_ulysses/
-	cp -r ./build/logos/ /usr/local/bin/_ulysses/
+	cp $dir/build/ulysses.sh /usr/local/bin/ulysses
+	cp $dir/build/.menu_cmds /usr/local/bin/_ulysses/
+	cp -r $dir/build/bin/ /usr/local/bin/_ulysses/
+	cp -r $dir/build/logos/ /usr/local/bin/_ulysses/
 
 	echo -e "$gren[SUCCESSFULLY INSTALLED ulysses]$clr"
 	echo "You can now run ulysses from the command line! Give it a try!"
