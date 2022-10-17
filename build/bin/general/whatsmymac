@@ -14,7 +14,6 @@ _getaddr() {
         ADDR=${ADDR::18}
 
         echo $ADDR
-        exit 0
 }
 
 _getdev() {

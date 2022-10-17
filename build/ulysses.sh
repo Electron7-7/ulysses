@@ -19,36 +19,47 @@ p1="$bod┌──($bold$you$user$clr$bod)"
 p2="$bod╰──────[$bold$current$clr$bod]──╡$bold\$$clr: "
 
 _prompt() {
+	success=false
+
 	echo -ne "$p1\n$p2"
 	read -r user_in
 
-	case $user_in in
-		"reload" )
-			source $dir/.menu_cmds
-			_logo;;
+	for z in $bin/*/; do
+		if [[ $(ls $z) =~ $user_in ]]; then
+			success=true
+			$bin/$z/$user_in
+		fi
+	done
 
-		"quit"|"exit" )
-			clear
-			exit 0;;
+	if [[ ! $success ]]; then
+		case $user_in in
+			"reload" )
+				source $dir/.menu_cmds
+				_logo;;
 
-		"help")
-			help;;
+			"quit"|"exit" )
+				clear
+				exit 0;;
 
-		"help"*)
-			length=${#user_in}
-			dum=${user_in:5:length}
-			help $dum;;
+			"help")
+				help;;
 
-		"clear"|"cls"|"clr"|"^L")
-			clear
-			echo -e "$logoColor$LOGO$clr\n";;
+			"help"*)
+				length=${#user_in}
+				dum=${user_in:5:length}
+				help $dum;;
 
-		"list"|"show")
-			list;;
+			"clear"|"cls"|"clr"|"^L")
+				clear
+				echo -e "$logoColor$LOGO$clr\n";;
 
-		*)
-			echo -e "$red[COMMAND NOT FOUND]: ${user_in}$clr\n";;
-	esac
+			"list"|"show")
+				list;;
+
+			*)
+				echo -e "$red[COMMAND NOT FOUND]: ${user_in}$clr\n";;
+		esac
+	fi
 }
 
 _logo() {
