@@ -15,7 +15,7 @@ _getaddr() {
 
         echo $ADDR
 
-        break
+        exit 0
 }
 
 _getdev() {

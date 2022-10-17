@@ -40,7 +40,7 @@ spoof_me() {
 	ip -c link show $NETFACE
 	rm .log
 
-	break
+	exit 0
 }
 
 get_face() {
